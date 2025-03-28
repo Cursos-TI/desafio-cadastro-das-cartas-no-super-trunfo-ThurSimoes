@@ -1,0 +1,13 @@
+#include <stdio.h> 
+
+int main() {
+    char estado[] = "São Paulo";
+    char codigo_da_carta[] = "A01";
+    char nome_da_cidade[] = "São Paulo";
+    int populacao = 11895578;
+    float area_km = 1521;
+    float pib = 35000000;
+    int numeros_de_pontos_turisticos = 36;
+
+    return 0;
+}
