@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>
+
 
 int main() {
     // Dados da cidade
@@ -12,5 +12,5 @@ int main() {
     int pontos_turisticos = 36;  // Nome mais apropriado em português
 
 
-    return 0;
+    retornar 0;
 }
