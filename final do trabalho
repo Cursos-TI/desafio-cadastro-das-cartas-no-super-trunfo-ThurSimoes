@@ -1,0 +1,195 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <ctype.h>
+
+// Estrutura para representar uma carta
+typedef struct {
+    char nome[50];
+    float populacao;    // em milhões
+    float area;         // em mil km²
+    float idh;          // índice de 0 a 1
+    float pib;          // em bilhões de R$
+    char capital[30];
+} Carta;
+
+// Função para criar as cartas do jogo
+void criarCartas(Carta cartas[]) {
+    // Carta de São Paulo
+    strcpy(cartas[0].nome, "São Paulo");
+    cartas[0].populacao = 46.65;
+    cartas[0].area = 248.2;
+    cartas[0].idh = 0.806;
+    cartas[0].pib = 2.38; // trilhões, mas vamos tratar como bilhões para simplificar
+    strcpy(cartas[0].capital, "São Paulo");
+    
+    // Carta do Acre
+    strcpy(cartas[1].nome, "Acre");
+    cartas[1].populacao = 0.906;
+    cartas[1].area = 164.2;
+    cartas[1].idh = 0.710;
+    cartas[1].pib = 15.6; // bilhões
+    strcpy(cartas[1].capital, "Rio Branco");
+}
+
+// Função para exibir uma carta
+void exibirCarta(Carta c) {
+    printf("\n---------------------------------\n");
+    printf("| %-29s |\n", c.nome);
+    printf("|-------------------------------|\n");
+    printf("| Capital: %-20s |\n", c.capital);
+    printf("| População: %-17.2f milhoes |\n", c.populacao);
+    printf("| Area: %-22.2f mil km² |\n", c.area);
+    printf("| IDH: %-24.3f |\n", c.idh);
+    printf("| PIB: %-23.2f bilhoes |\n", c.pib);
+    printf("---------------------------------\n");
+}
+
+// Função para comparar as cartas
+int compararCartas(Carta jogador, Carta computador, int atributo) {
+    switch(atributo) {
+        case 1: // População
+            if (jogador.populacao > computador.populacao) return 1;
+            else if (jogador.populacao < computador.populacao) return -1;
+            else return 0;
+        case 2: // Área
+            if (jogador.area > computador.area) return 1;
+            else if (jogador.area < computador.area) return -1;
+            else return 0;
+        case 3: // IDH
+            if (jogador.idh > computador.idh) return 1;
+            else if (jogador.idh < computador.idh) return -1;
+            else return 0;
+        case 4: // PIB
+            if (jogador.pib > computador.pib) return 1;
+            else if (jogador.pib < computador.pib) return -1;
+            else return 0;
+        default:
+            return 0;
+    }
+}
+
+int main() {
+    Carta cartas[2];
+    criarCartas(cartas);
+    
+    int jogadorCartas[2] = {1, 1}; // 1 = tem a carta, 0 = não tem
+    int computadorCartas[2] = {1, 1};
+    int rodada = 1;
+    
+    srand(time(NULL));
+    
+    printf("Bem-vindo ao Super Trunfo: Sao Paulo vs Acre!\n");
+    
+    while (1) {
+        printf("\n=== Rodada %d ===\n", rodada);
+        
+        // Determinar quem joga (0 = jogador, 1 = computador)
+        int vez = rand() % 2;
+        
+        // Verificar se alguém ganhou
+        if (jogadorCartas[0] + jogadorCartas[1] == 0) {
+            printf("\nVocê perdeu todas as cartas. Fim de jogo!\n");
+            break;
+        }
+        if (computadorCartas[0] + computadorCartas[1] == 0) {
+            printf("\nVocê ganhou todas as cartas. Parabens!\n");
+            break;
+        }
+        
+        // Escolher cartas disponíveis
+        int cartaJogador, cartaComputador;
+        do {
+            cartaJogador = rand() % 2;
+        } while (jogadorCartas[cartaJogador] == 0);
+        
+        do {
+            cartaComputador = rand() % 2;
+        } while (computadorCartas[cartaComputador] == 0);
+        
+        if (vez == 0) { // Vez do jogador
+            printf("\nSua vez de jogar!\n");
+            printf("Sua carta:\n");
+            exibirCarta(cartas[cartaJogador]);
+            
+            int atributo;
+            printf("\nEscolha o atributo para comparar:\n");
+            printf("1 - Populacao\n");
+            printf("2 - Area\n");
+            printf("3 - IDH\n");
+            printf("4 - PIB\n");
+            printf("Escolha: ");
+            scanf("%d", &atributo);
+            
+            printf("\nSua carta:\n");
+            exibirCarta(cartas[cartaJogador]);
+            
+            printf("\nCarta do computador:\n");
+            exibirCarta(cartas[cartaComputador]);
+            
+            int resultado = compararCartas(cartas[cartaJogador], cartas[cartaComputador], atributo);
+            
+            if (resultado == 1) {
+                printf("\nVoce ganhou esta rodada! Recebe a carta do computador.\n");
+                jogadorCartas[cartaComputador] = 1;
+                computadorCartas[cartaComputador] = 0;
+            } else if (resultado == -1) {
+                printf("\nVoce perdeu esta rodada! O computador fica com sua carta.\n");
+                computadorCartas[cartaJogador] = 1;
+                jogadorCartas[cartaJogador] = 0;
+            } else {
+                printf("\nEmpate! As cartas voltam para os donos.\n");
+            }
+        } else { // Vez do computador
+            printf("\nVez do computador!\n");
+            
+            // O computador escolhe um atributo aleatório
+            int atributo = rand() % 4 + 1;
+            char *nomeAtributo;
+            
+            switch(atributo) {
+                case 1: nomeAtributo = "Populacao"; break;
+                case 2: nomeAtributo = "Area"; break;
+                case 3: nomeAtributo = "IDH"; break;
+                case 4: nomeAtributo = "PIB"; break;
+            }
+            
+            printf("O computador escolheu comparar por: %s\n", nomeAtributo);
+            
+            printf("\nSua carta:\n");
+            exibirCarta(cartas[cartaJogador]);
+            
+            printf("\nCarta do computador:\n");
+            exibirCarta(cartas[cartaComputador]);
+            
+            int resultado = compararCartas(cartas[cartaComputador], cartas[cartaJogador], atributo);
+            
+            if (resultado == 1) {
+                printf("\nO computador ganhou esta rodada! Fica com sua carta.\n");
+                computadorCartas[cartaJogador] = 1;
+                jogadorCartas[cartaJogador] = 0;
+            } else if (resultado == -1) {
+                printf("\nO computador perdeu esta rodada! Voce fica com a carta dele.\n");
+                jogadorCartas[cartaComputador] = 1;
+                computadorCartas[cartaComputador] = 0;
+            } else {
+                printf("\nEmpate! As cartas voltam para os donos.\n");
+            }
+        }
+        
+        rodada++;
+        
+        // Mostrar placar
+        printf("\nPlacar:\n");
+        printf("Voce tem %d cartas\n", jogadorCartas[0] + jogadorCartas[1]);
+        printf("Computador tem %d cartas\n", computadorCartas[0] + computadorCartas[1]);
+        
+        // Pausa para próxima rodada
+        printf("\nPressione Enter para continuar...");
+        getchar(); // Limpar o buffer
+        getchar(); // Esperar Enter
+    }
+    
+    return 0;
+}
